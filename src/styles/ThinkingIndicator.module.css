@@ -1,0 +1,33 @@
+/* We can borrow styles from Chat.module.css for consistency */
+.messageBubble {
+  max-width: 80%;
+  padding: 10px 15px;
+  border-radius: 18px;
+  line-height: 1.5;
+}
+
+.author {
+  font-weight: bold;
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.modelBubble {
+  background-color: #e9ecef;
+  color: #333;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.thinkingContainer {
+  display: flex;
+  align-items: baseline;
+}
+
+/* The spans for the dots */
+.thinkingContainer span {
+  font-weight: bold;
+  font-size: 1.5em; /* Make dots bigger */
+  line-height: 1;
+}

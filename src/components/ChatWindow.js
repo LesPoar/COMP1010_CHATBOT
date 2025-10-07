@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion'; // 1. Import AnimatePresence
 import MessageBubble from './MessageBubble';
 import MessageInput from './MessageInput';
+import ThinkingIndicator from './ThinkingIndicator'; // 2. Import our new component
 import styles from '../styles/Chat.module.css';
 
 export default function ChatWindow() {
@@ -10,14 +12,13 @@ export default function ChatWindow() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Auto-scroll to the latest message
+  // Auto-scroll to the latest message or loading indicator
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]); // 3. Add 'loading' to the dependency array
 
   const handleSendMessage = async (prompt) => {
     setLoading(true);
-    // Add user's message to the chat
     setMessages(prev => [...prev, { role: 'user', message: prompt }]);
 
     try {
@@ -32,7 +33,6 @@ export default function ChatWindow() {
       }
 
       const data = await response.json();
-      // Add AI's response to the chat
       setMessages(prev => [...prev, { role: 'model', message: data.aiResponse }]);
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -45,10 +45,16 @@ export default function ChatWindow() {
   return (
     <div className={styles.chatContainer}>
       <div className={styles.messageList}>
-        {messages.map((msg, index) => (
-          <MessageBubble key={index} role={msg.role} message={msg.message} />
-        ))}
-        {loading && <MessageBubble role="model" message="Thinking..." />}
+        {/* 4. Wrap the dynamic list in AnimatePresence */}
+        <AnimatePresence>
+          {messages.map((msg, index) => (
+            // 5. Use a more robust key for better animation tracking
+            <MessageBubble key={`${msg.role}-${index}`} role={msg.role} message={msg.message} />
+          ))}
+
+          {/* 6. Replace the old loading bubble with our new animated component */}
+          {loading && <ThinkingIndicator key="thinking" />}
+        </AnimatePresence>
         <div ref={messagesEndRef} />
       </div>
       <MessageInput onSendMessage={handleSendMessage} loading={loading} />

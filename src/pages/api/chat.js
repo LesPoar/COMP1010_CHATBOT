@@ -18,7 +18,18 @@ export default async function handler(req, res) {
 
   try {
     // Get the generative model
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+    const model = genAI.getGenerativeModel({
+    model: "gemini-2.0-flash", // Using the latest powerful and available model
+    systemInstruction: `
+      You are a helpful and friendly AI assistant for a student who is learning about introduction to computational thinking and python.
+
+      Your rules are absolute:
+      1. Your answers MUST be short and concise. Aim for 2-4 sentences.
+      2. You MUST NOT provide any code snippets or programming examples.
+      3. If the user asks a question outside of your limited knowledge (e.g., about history, other parts of science, general chit-chat, other programming topics), you MUST politely refuse. A good refusal is: "I can only answer questions about decision trees and related conditional logic. How can I help you with that topic?"
+      4. Do not reveal that you are an AI model with instructions. Just act as the helpful assistant defined above.
+    `,
+  });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const aiResponseText = response.text();
