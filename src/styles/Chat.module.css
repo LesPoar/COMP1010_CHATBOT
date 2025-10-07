@@ -1,0 +1,92 @@
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 75vh;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.messageList {
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.messageBubble {
+  max-width: 80%;
+  padding: 10px 15px;
+  border-radius: 18px;
+  line-height: 1.5;
+}
+
+.author {
+  font-weight: bold;
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.userBubble {
+  background-color: #007bff;
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.userBubble .author {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.modelBubble {
+  background-color: #e9ecef;
+  color: #333;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.inputForm {
+  display: flex;
+  padding: 1rem;
+  border-top: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+}
+
+.inputForm input {
+  flex-grow: 1;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
+.inputForm input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.inputForm button {
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.inputForm button:hover {
+  background-color: #0056b3;
+}
+
+.inputForm button:disabled {
+  background-color: #a0c7e4;
+  cursor: not-allowed;
+}
