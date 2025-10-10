@@ -1,21 +1,20 @@
-import { useState, useRef, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion'; // 1. Import AnimatePresence
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import MessageBubble from './MessageBubble';
 import MessageInput from './MessageInput';
-import ThinkingIndicator from './ThinkingIndicator'; // 2. Import our new component
+import ThinkingIndicator from './ThinkingIndicator';
 import styles from '../styles/Chat.module.css';
 
-export default function ChatWindow() {
+const ChatWindow = forwardRef((props, ref) => {
   const [messages, setMessages] = useState([
     { role: 'model', message: 'Hello! How can I help you today?' }
   ]);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Auto-scroll to the latest message or loading indicator
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]); // 3. Add 'loading' to the dependency array
+  }, [messages, loading]);
 
   const handleSendMessage = async (prompt) => {
     setLoading(true);
@@ -42,17 +41,17 @@ export default function ChatWindow() {
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    sendMessage: handleSendMessage
+  }));
+
   return (
     <div className={styles.chatContainer}>
       <div className={styles.messageList}>
-        {/* 4. Wrap the dynamic list in AnimatePresence */}
         <AnimatePresence>
           {messages.map((msg, index) => (
-            // 5. Use a more robust key for better animation tracking
             <MessageBubble key={`${msg.role}-${index}`} role={msg.role} message={msg.message} />
           ))}
-
-          {/* 6. Replace the old loading bubble with our new animated component */}
           {loading && <ThinkingIndicator key="thinking" />}
         </AnimatePresence>
         <div ref={messagesEndRef} />
@@ -60,4 +59,8 @@ export default function ChatWindow() {
       <MessageInput onSendMessage={handleSendMessage} loading={loading} />
     </div>
   );
-}
+});
+
+ChatWindow.displayName = 'ChatWindow';
+
+export default ChatWindow;
