@@ -1,12 +1,26 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import ChatWindow from '../components/ChatWindow';
 import styles from '../styles/Slides.module.css';
 
 export default function SlidesPage() {
   const chatWindowRef = useRef(null);
-  const pdfUrl = '/course-slides.pdf';
+  const [pdfUrl, setPdfUrl] = useState('/lecture9.pdf');
+
+  useEffect(() => {
+    fetchPdfFilename();
+  }, []);
+
+  const fetchPdfFilename = async () => {
+    try {
+      const response = await fetch('/api/courseData');
+      const data = await response.json();
+      setPdfUrl(`/${data.slidesFilename}`);
+    } catch (error) {
+      console.error('Error fetching PDF filename:', error);
+    }
+  };
 
   return (
     <>

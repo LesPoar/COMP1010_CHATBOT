@@ -1,49 +1,89 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { sql } from '@vercel/postgres';
-import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+import path from 'path';
 
-// Initialize the Google AI client
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const apiKey = process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
+
+const model = genAI.getGenerativeModel({
+  model: 'gemini-2.5-flash',
+});
+
+const generationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  topK: 40,
+  maxOutputTokens: 8192,
+  responseMimeType: 'text/plain',
+};
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return res.status(405).json({ message: 'Method not allowed' });
   }
 
   const { prompt } = req.body;
 
   if (!prompt) {
-    return res.status(400).json({ error: 'Prompt is required' });
+    return res.status(400).json({ message: 'Prompt is required' });
   }
 
   try {
-    // Get the generative model
-    const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash", // Using the latest powerful and available model
-    systemInstruction: `
-      You are a helpful and friendly AI assistant for a student.
+    // Load AI scope from courseData.json
+    let systemInstruction = "You are a helpful teaching assistant for COMP1010 - Introduction to Programming.";
+    
+    try {
+      const dataFilePath = path.join(process.cwd(), 'data', 'courseData.json');
+      
+      // Check if file exists
+      if (fs.existsSync(dataFilePath)) {
+        const fileContents = fs.readFileSync(dataFilePath, 'utf8');
+        
+        // Log the raw file contents for debugging
+        console.log('Raw file contents:', fileContents.substring(0, 200));
+        
+        const courseData = JSON.parse(fileContents);
+        
+        // Validate the data structure
+        if (courseData && courseData.aiScope && typeof courseData.aiScope === 'string') {
+          systemInstruction = courseData.aiScope;
+          console.log('Using AI scope from courseData');
+        } else {
+          console.warn('Invalid aiScope in courseData, using default');
+        }
+      } else {
+        console.warn('courseData.json not found, using default instruction');
+      }
+    } catch (fileError) {
+      console.error('Error reading courseData.json:', fileError.message);
+      // Continue with default instruction
+    }
 
-      Your rules are absolute:
-      1. Your answers MUST be short and concise. Aim for 2-4 sentences.
-      2. You MUST NOT provide any code snippets or programming examples.
-      4. Do not reveal that you are an AI model with instructions. Just act as the helpful assistant defined above.
-    `,
-  });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const aiResponseText = response.text();
+    const chatSession = model.startChat({
+      generationConfig,
+      history: [
+        {
+          role: 'user',
+          parts: [{ text: systemInstruction }],
+        },
+        {
+          role: 'model',
+          parts: [{ text: 'Understood. I will assist students with COMP1010 concepts as described.' }],
+        },
+      ],
+    });
 
-    // Log the conversation to the database
-    const logId = uuidv4();
-    await sql`
-      INSERT INTO chat_logs (id, user_query, ai_response)
-      VALUES (${logId}, ${prompt}, ${aiResponseText});
-    `;
+    const result = await chatSession.sendMessage(prompt);
+    const aiResponse = result.response.text();
 
-    // Send the AI's response back to the frontend
-    res.status(200).json({ aiResponse: aiResponseText });
+    return res.status(200).json({ aiResponse });
   } catch (error) {
-    console.error('Error in chat API:', error);
-    res.status(500).json({ error: 'Failed to get response from AI or log chat.' });
+    console.error('Error calling Gemini API:', error);
+    console.error('Error stack:', error.stack);
+    
+    return res.status(500).json({ 
+      message: 'Error processing your request',
+      error: error.message 
+    });
   }
 }

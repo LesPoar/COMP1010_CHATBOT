@@ -1,59 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from '../styles/TopicsPanel.module.css';
 
 export default function TopicsPanel({ onQuestionClick }) {
   const [activeTab, setActiveTab] = useState('topics');
   const [selectedTopic, setSelectedTopic] = useState(null);
+  const [topics, setTopics] = useState([]);
+  const [learningObjectives, setLearningObjectives] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const topics = [
-    {
-      id: 1,
-      title: 'Introduction to Programming',
-      questions: [
-        'What is a variable?',
-        'Explain the difference between compilation and interpretation',
-        'What are the basic data types in programming?'
-      ]
-    },
-    {
-      id: 2,
-      title: 'Control Structures',
-      questions: [
-        'What is the difference between if-else and switch statements?',
-        'Explain how a for loop works',
-        'When should you use a while loop vs a for loop?'
-      ]
-    },
-    {
-      id: 3,
-      title: 'Functions and Methods',
-      questions: [
-        'What is the purpose of functions?',
-        'Explain function parameters and return values',
-        'What is the difference between pass by value and pass by reference?'
-      ]
-    },
-    {
-      id: 4,
-      title: 'Arrays and Data Structures',
-      questions: [
-        'What is an array and how do you access elements?',
-        'Explain the concept of array indexing',
-        'What are the advantages of using arrays?'
-      ]
+  useEffect(() => {
+    fetchCourseData();
+  }, []);
+
+  const fetchCourseData = async () => {
+    try {
+      const response = await fetch('/api/courseData');
+      const data = await response.json();
+      setTopics(data.topics);
+      setLearningObjectives(data.learningObjectives);
+    } catch (error) {
+      console.error('Error fetching course data:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
-
-  const learningObjectives = [
-    'Understand fundamental programming concepts',
-    'Write simple programs using variables and data types',
-    'Implement control flow using conditional statements',
-    'Create and use functions effectively',
-    'Work with arrays and basic data structures',
-    'Debug and test code systematically',
-    'Apply problem-solving strategies to programming challenges'
-  ];
+  };
 
   const handleTopicClick = (topic) => {
     setSelectedTopic(selectedTopic?.id === topic.id ? null : topic);
@@ -63,6 +34,10 @@ export default function TopicsPanel({ onQuestionClick }) {
     onQuestionClick(question);
     setSelectedTopic(null);
   };
+
+  if (loading) {
+    return <div className={styles.panel}>Loading...</div>;
+  }
 
   return (
     <div className={styles.panel}>

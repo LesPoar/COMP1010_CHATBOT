@@ -1,0 +1,59 @@
+{
+  "topics": [
+    {
+      "id": 1,
+      "title": "test test ",
+      "questions": [
+        "what is a test?",
+        "Explain the difference between compilation and interpretation",
+        "What are the basic data types in programming?"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Control Structures",
+      "questions": [
+        "What is the difference between if-else and switch statements?",
+        "Explain how a for loop works",
+        "When should you use a while loop vs a for loop?"
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Functions and Methods",
+      "questions": [
+        "What is the purpose of functions?",
+        "Explain function parameters and return values",
+        "What is the difference between pass by value and pass by reference?"
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Arrays and Data Structures",
+      "questions": [
+        "What is an array and how do you access elements?",
+        "Explain the concept of array indexing",
+        "What are the advantages of using arrays?"
+      ]
+    },
+    {
+      "id": 1760087149160,
+      "title": "new test",
+      "questions": [
+        "Sample question 1 ",
+        "Sample question 2"
+      ]
+    }
+  ],
+  "learningObjectives": [
+    "Understand fundamental programming concepts",
+    "Write simple programs using variables and data types",
+    "Implement control flow using conditional statements",
+    "Create and use functions effectively",
+    "Work with arrays and basic data structures",
+    "Debug and test code systematically",
+    "Apply problem-solving strategies to programming challenges"
+  ],
+  "aiScope": "You are a helpful teaching assistant for COMP1010 - Introduction to Programming. Focus on helping students understand fundamental programming concepts including variables, control structures, functions, and basic data structures. Provide clear explanations with examples. Be encouraging and patient.",
+  "slidesFilename": "lecture9.pdf"
+}
