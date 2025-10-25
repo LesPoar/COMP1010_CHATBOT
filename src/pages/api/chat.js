@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { sql } from '@vercel/postgres';
 import fs from 'fs';
 import path from 'path';
 
@@ -75,6 +76,12 @@ export default async function handler(req, res) {
 
     const result = await chatSession.sendMessage(prompt);
     const aiResponse = result.response.text();
+
+    // Save conversation to database with generated UUID
+    await sql`
+      INSERT INTO chat_logs (id, user_query, ai_response, created_at)
+      VALUES (gen_random_uuid(), ${prompt}, ${aiResponse}, NOW())
+    `;
 
     return res.status(200).json({ aiResponse });
   } catch (error) {
