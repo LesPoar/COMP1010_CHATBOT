@@ -30,33 +30,25 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Load AI scope from courseData.json
+    // Load AI scope from database
     let systemInstruction = "You are a helpful teaching assistant for COMP1010 - Introduction to Programming.";
     
     try {
-      const dataFilePath = path.join(process.cwd(), 'data', 'courseData.json');
+      const result = await sql`
+        SELECT ai_scope 
+        FROM course_content 
+        ORDER BY id DESC 
+        LIMIT 1
+      `;
       
-      // Check if file exists
-      if (fs.existsSync(dataFilePath)) {
-        const fileContents = fs.readFileSync(dataFilePath, 'utf8');
-        
-        // Log the raw file contents for debugging
-        console.log('Raw file contents:', fileContents.substring(0, 200));
-        
-        const courseData = JSON.parse(fileContents);
-        
-        // Validate the data structure
-        if (courseData && courseData.aiScope && typeof courseData.aiScope === 'string') {
-          systemInstruction = courseData.aiScope;
-          console.log('Using AI scope from courseData');
-        } else {
-          console.warn('Invalid aiScope in courseData, using default');
-        }
+      if (result.rows.length > 0 && result.rows[0].ai_scope) {
+        systemInstruction = result.rows[0].ai_scope;
+        console.log('Using AI scope from database');
       } else {
-        console.warn('courseData.json not found, using default instruction');
+        console.warn('No ai_scope found in database, using default instruction');
       }
-    } catch (fileError) {
-      console.error('Error reading courseData.json:', fileError.message);
+    } catch (dbError) {
+      console.error('Error reading from database:', dbError.message);
       // Continue with default instruction
     }
 

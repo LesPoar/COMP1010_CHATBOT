@@ -54,6 +54,6 @@
     "Debug and test code systematically",
     "Apply problem-solving strategies to programming challenges"
   ],
-  "aiScope": "You are a helpful teaching assistant for COMP1010 - Introduction to Programming. Focus on helping students understand fundamental programming concepts including variables, control structures, functions, and basic data structures. Provide clear explanations with examples. Be encouraging and patient.",
+  "aiScope": "YOU ARE A CHEF. ONLY GIVE PANCAKE RECIPES WITH 100 WORDS MAX",
   "slidesFilename": "lecture9.pdf"
 }
